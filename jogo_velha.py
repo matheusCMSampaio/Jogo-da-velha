@@ -1,129 +1,301 @@
 import time
+
 import os
+
+import random
+
 def main():
     imprimeMenuPrincipal()
-    
-
-def leiaCoordenadaLinha():
-    aux = []
-    for i in range(len(jogo)):
-        aux.append(i)
-    return aux
-    
-def leiaCoordenadaColuna():
-    aux = []
-    for i in range(len(jogo)):
-        aux.append(i)
-    return aux
-
-    
-def imprimirTabuleiro():
-    linha = leiaCoordenadaLinha()
-    coluna = leiaCoordenadaColuna()
-    print(f'{linha[0]} {jogo[0][0]} | {jogo[0][1]} | {jogo[0][2]}')
-    print('  ---------')
-    print(f'{linha[1]} {jogo[1][0]} | {jogo[1][1]} | {jogo[1][2]}')
-    print('  ---------')
-    print(f'{linha[2]} {jogo[2][0]} | {jogo[2][1]} | {jogo[2][2]}')
-    print(f'  {coluna[0]}   {coluna[1]}   {coluna[2]}')
 
 def imprimeMenuPrincipal():
+
     os.system('cls') 
+
     print('\tMenu principal\n')
-    print('1 - J x J \n2 - J x Bot (Modo Fácil) \n3 - J x Bot (Modo difícil)\n0 - Sair')
+
+    print('1 - J x J \n2 - J x Bot (Modo Fácil) \n0 - Sair')
+
     escolha = int(input('Escolha a opção: '))
+
     time.sleep(2)
+    tabuleiro = [[' ',' ',' '],[' ',' ',' '],[' ',' ',' ']]
+
     match escolha:
+
         case 1:
-            modoJogador()
+
+            
+            modoJogador(tabuleiro)
+
         case 2:
-            print('2')
-        case 3:
-            print('3')
+
+            tabuleiro = [[' ',' ',' '],[' ',' ',' '],[' ',' ',' ']]
+
+
+            modoFacil()
+
         case 0:
+
             print('0')
+
         case _:
+
             print('\n\tOpção inválida\n')
+
             time.sleep(2)
-            imprimeMenuPrincipal()
+
+            imprimeMenuPrincipal()    
+
+
+def leiaCoordenadaLinha(tabuleiro):
+
+    aux = []
+    for i in range(len(tabuleiro)):
+
+        aux.append(i)
+
+    return aux
     
-def modoJogador():
+
+def leiaCoordenadaColuna(tabuleiro):
+
+    aux = []
+    for i in range(len(tabuleiro)):
+
+        aux.append(i)
+
+    return aux
+
+    
+
+def imprimirTabuleiro(tabuleiro):
+
+    linha = leiaCoordenadaLinha(tabuleiro)
+
+    coluna = leiaCoordenadaColuna(tabuleiro)
+
+    print(f'{linha[0]} {tabuleiro[0][0]} | {tabuleiro[0][1]} | {tabuleiro[0][2]}')
+
+    print('  ---------')
+
+    print(f'{linha[1]} {tabuleiro[1][0]} | {tabuleiro[1][1]} | {tabuleiro[1][2]}')
+
+    print('  ---------')
+
+    print(f'{linha[2]} {tabuleiro[2][0]} | {tabuleiro[2][1]} | {tabuleiro[2][2]}')
+
+    print(f'  {coluna[0]}   {coluna[1]}   {coluna[2]}')
+
+
+
+    
+
+def modoJogador(tabuleiro):
+
     os.system('cls')
-    aux = 1  
+
+    cont = 1  
+
     jogador = 1
+
     linha = 0
+
     coluna = 0
-    while aux <=9:
-        imprimirTabuleiro()
-        if aux % 2 == 0: #Verifica qual jogador irá jogar, ou seja, em numeros pares será o jogador 2 que joga
+
+    while cont <=9:
+
+        imprimirTabuleiro(tabuleiro)
+
+        if cont % 2 == 0: 
+
             jogador = 2
         else:
-            jogador = 1 # E impar é o jogador 1 que joga
+
+            jogador = 1 
+
         linha= int(input(f'Jogador {jogador}: Escolha a linha: '))
+
         coluna= int(input(f'Jogador {jogador}: Escolha a coluna: '))
-        if posicaoValida(linha, coluna):
-            if jogador == 1:
-                jogada = 'X'
-                jogo[linha][coluna] = 'X'
-            else:
-                jogada = 'O'
-                jogo[linha][coluna] = 'O'
-            
-            if validaColuna(jogada) or validaLinha(jogada) or validaVertical(jogada):
-                print(f'Jogador {jogador} vitórioso')
-                time.sleep(2)
-                os.system('cls')
-                escolha = input('Deseja continuar?')
-                if escolha== 'Sim' or escolha == 'sim':
-                    imprimeMenuPrincipal()
-                else:
-                    os.system('cls')
-                    time.sleep(2)
-                    print('Adeus')
-                    break
 
+        if jogar(linha,coluna,jogador,tabuleiro) == False:
+
+            cont -=1
+
+        if verificaVencedor('X' if jogador == 1 else 'O', jogador, tabuleiro):
+            somaVencedor(jogador)
+            imprimeMenuPrincipal()
+
+        if verificaVelha(cont, tabuleiro):
+
+            imprimeMenuPrincipal()
+
+        cont += 1
+
+
+def verificaVelha(cont, tabuleiro):
+
+    if cont == 9:
+
+        imprimirTabuleiro(tabuleiro)
+
+        print('\tDeu velha!')
+
+        return True
+
+    return False
+
+
+
+def jogar(linha,coluna,jogador,tabuleiro):
+
+    if posicaoValida(linha, coluna, tabuleiro):
+
+        if jogador == 1:
+
+            jogada = 'X'
+
+            tabuleiro[linha][coluna] = 'X'
         else:
-            print('\n\tPosição inválida')
-            aux =-1
-        aux += 1
+
+            jogada = 'O'
+
+            tabuleiro[linha][coluna] = 'O'
+    else:
+
+        print('\n\tPosição inválida')
+
+        aux =-1
+
+        return False
+
+    return True
 
 
-def posicaoValida(linha,coluna):
-    if jogo[linha][coluna] == ' ':
+def verificaVencedor(jogada, jogador, tabuleiro):
+
+    if validaColuna(jogada,tabuleiro) or validaLinha(jogada, tabuleiro) or validaVertical(jogada, tabuleiro):
+
+        print(f'Jogador {jogador} vitórioso')
+
+        imprimirTabuleiro(tabuleiro)
+
+        time.sleep(2)
+
+        return True
+
+    return False
+            
+
+def somaVencedor(jogador):
+
+    jogador += 1
+    return jogador           
+
+
+def imprimePontuacao(jogador1, jogador2):
+
+    print(f'Pontuação \nJogador 1 - {jogador1} pontos\nJogador 2 - {jogador2} pontos')
+
+
+def posicaoValida(linha,coluna,tabuleiro):
+
+    if tabuleiro[linha][coluna] == ' ':
+
         return True
     else:
+
         return False
 
 
-def verificaVencedor(jogador):
-    jogada = ''
-    if jogador == 1:
-        jogada = 'X'
-    else:
-        jogada = 'O'
     
-def validaLinha(jogada):
-    for i in range(len(jogo)):
-        if jogo[i][0] == jogada and jogo[i][1] == jogada and jogo[i][2] == jogada:
+
+def validaLinha(jogada,tabuleiro):
+    for i in range(len(tabuleiro)):
+
+        if tabuleiro[i][0] == jogada and tabuleiro[i][1] == jogada and tabuleiro[i][2] == jogada:
+
             return True
+
     return False    
 
-def validaColuna(jogada):
-    for i in range(len(jogo)):
-        if jogo[0][i] == jogada and jogo[1][i] == jogada and jogo[2][i] == jogada:
+
+def validaColuna(jogada,tabuleiro):
+    for i in range(len(tabuleiro)):
+
+        if tabuleiro[0][i] == jogada and tabuleiro[1][i] == jogada and tabuleiro[2][i] == jogada:
+
             return True
+
     return False    
 
-def validaVertical(jogada):
-    if jogo[0][0] == jogada and jogo[1][1] == jogada and jogo[2][2] == jogada:
+
+def validaVertical(jogada,tabuleiro):
+
+    if tabuleiro[0][0] == jogada and tabuleiro[1][1] == jogada and tabuleiro[2][2] == jogada:
+
         return True
-    elif jogo[0][2] == jogada and jogo[1][1] == jogada and jogo[2][0] == jogada:
+
+    elif tabuleiro[0][2] == jogada and tabuleiro[1][1] == jogada and tabuleiro[2][0] == jogada:
+
         return True
     else:
+
         return False
 
 
+def modoFacil(tabuleiro):
 
-jogo = [[' ',' ',' '],[' ',' ',' '],[' ',' ',' ']]
+    os.system('cls')
+
+    cont = 1  
+
+    jogador = 1
+
+    linha = 0
+
+    coluna = 0
+
+    aux = 0
+
+    while cont <=5:
+
+        imprimirTabuleiro(tabuleiro)
+
+        aux +=1
+
+        linha= int(input(f'Jogador {jogador}: Escolha a linha: '))
+
+        coluna= int(input(f'Jogador {jogador}: Escolha a coluna: '))
+
+        if jogar(linha,coluna,1,tabuleiro) == False:
+
+            cont -=1
+
+            aux -= 1
+
+        if verificaVencedor('X', jogador):
+            somaVencedor(1)
+            imprimeMenuPrincipal()
+
+        aux+= 1
+
+        while True:
+
+            if jogar(random.randint(0,2), random.randint(0,2), 0):
+
+                break
+
+        if verificaVencedor('O', 'bot'):
+            somaVencedor(2)
+            imprimeMenuPrincipal()
+
+        if verificaVelha(cont,tabuleiro):
+
+            imprimeMenuPrincipal()
+
+        cont += 1
+
+
 
 main()
+
